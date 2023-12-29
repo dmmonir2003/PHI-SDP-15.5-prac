@@ -4,7 +4,7 @@ from django.shortcuts import render,redirect
 from django.urls import reverse_lazy
 from . import forms
 from . import models
-from django.views.generic import CreateView,UpdateView
+from django.views.generic import CreateView,UpdateView,DeleteView
 # Create your views here.
 
 def add_album(request):
@@ -41,10 +41,25 @@ def edit_album(request,id):
 
 
 class EditAlbumView(UpdateView):
-    pass
+     model=models.AlbumModel
+     form_class=forms.AlbumForm
+     success_url=reverse_lazy('homepage')
+     template_name='add_album.html'
+     def get_context_data(self, **kwargs):
+         context = super().get_context_data(**kwargs)
+         context["forms"] =context['form'] 
+         return context
+     
+    
 
 
 def delete_album(request,id):
     album=models.AlbumModel.objects.get(pk=id)
     album.delete()
     return redirect('homepage')
+
+class DeleteAlbumView(DeleteView):
+    model=models.AlbumModel
+    template_name='delete.html'
+    pk_url_kwarg='id'
+    success_url=reverse_lazy('homepage')
