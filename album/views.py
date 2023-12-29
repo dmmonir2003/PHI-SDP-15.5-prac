@@ -1,6 +1,10 @@
+from django.forms.models import BaseModelForm
+from django.http import HttpResponse
 from django.shortcuts import render,redirect
+from django.urls import reverse_lazy
 from . import forms
 from . import models
+from django.views.generic import CreateView
 # Create your views here.
 
 def add_album(request):
@@ -12,6 +16,18 @@ def add_album(request):
     else:
          album_form=forms.AlbumForm()
     return render(request,'add_album.html',{'forms':album_form})
+
+class AddAlbumView(CreateView):
+    model=models.AlbumModel
+    template_name='add_album.html'
+    form_class=forms.AlbumForm
+    # context_object_name='forms'
+    success_url=reverse_lazy('add_album')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['forms'] = context['form']
+        return context
+    
 
 
 def edit_album(request,id):
